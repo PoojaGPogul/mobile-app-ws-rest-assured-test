@@ -9,6 +9,9 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +45,7 @@ class TestCreateUser {
 		Map<String , Object> userDetails = new HashMap<String, Object>();
 		userDetails.put("firstName", "Pooja");
 		userDetails.put("lastName", "Pogul");
-		userDetails.put("email", "test@test.com");
+		userDetails.put("email", "poojapogul@gmail.com");
 		userDetails.put("password", "123");
 		userDetails.put("addresses", userAddresses);
 		
@@ -52,7 +55,32 @@ class TestCreateUser {
 				.when().post(CONTEXT_PATH + "/users")
 				.then().statusCode(200).contentType("application/json")
 				.extract().response();
-
+		
+		String userId = response.jsonPath().getString("userId");
+		assertNotNull(userId);
+		assertTrue(userId.length() == 30);
+		
+		String bodyString = response.body().asString();
+		try {
+			JSONObject responseByJson = new JSONObject(bodyString);
+			JSONArray addresses = responseByJson.getJSONArray("addresses");
+			
+			assertNotNull(addresses);
+			assertTrue(addresses.length() == 1);
+			
+			String addressId = (String) addresses.getJSONObject(0).get("addressId");
+			assertNotNull(addressId);
+			assertTrue(addressId.length() == 30);
+			
+			
+		} catch (JSONException e) {
+			fail(e.getMessage());
+		}
+		
 	}
 
 }
+
+
+
+
