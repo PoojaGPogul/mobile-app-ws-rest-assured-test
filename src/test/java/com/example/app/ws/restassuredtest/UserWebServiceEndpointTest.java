@@ -118,5 +118,21 @@ class UserWebServiceEndpointTest {
 		assertEquals(addresses.get(0).get("streetName"), storedAddresses.get(0).get("streetName"));
 		
 	}
+	
+	/**
+	 * testDeleteUserDetails
+	 * */
+	@Test
+	final void d() {
+		Response response = given().header("Authorization", authorizationHeader)
+		.pathParam("id", userId)
+		.when().delete(CONTEXT_PATH+"/users/{id}")
+		.then().statusCode(200).contentType(JSON).extract().response();
+		
+		String result = response.jsonPath().getString("operationResult");
+		assertNotNull(result);
+		assertEquals("SUCCESS", result);
+		
+	}
 
 }
